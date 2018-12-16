@@ -1,0 +1,74 @@
+<!DOCTYPE html5>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Selection thingy</title>
+		<style>
+			.selection
+			{
+				display: block;
+				position: absolute;
+				background-color: rgba(21, 101, 192, 0.25);
+				border: 1px solid rgba(30, 136, 229, 0.5);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="selection"></div>
+		<script>
+			let isDown = false;
+			let oldX = -1, oldY = -1;
+			let newX = -1, newY = -1;
+			
+			function render (element)
+			{
+				if (!isDown)
+				{
+					element.removeAttribute("style");
+					return;
+				}
+				let startX = Math.min(oldX, newX);
+				let startY = Math.min(oldY, newY);
+				let endX   = Math.max(oldX, newX);
+				let endY   = Math.max(oldY, newY);
+				let width = endX - startX;
+				let height = endY - startY;
+				element.setAttribute("style", [
+					"display: block",
+					"width: " + width + "px",
+					"height: " + height + "px",
+					"top: " + startY + "px",
+					"left: " + startX + "px"
+				].join("; "));
+			}
+			
+			function mouseDown (e, x, y)
+			{
+				isDown = true;
+				oldX = x;
+				oldY = y;
+			}
+			
+			function mouseMove (e, x, y)
+			{
+				if (isDown) { newX = x; newY = y; render(e); }
+			}
+			
+			function mouseUp (e)
+			{
+				isDown = false;
+				oldX = -1;
+				oldY = -1;
+				newX = -1;
+				newY = -1;
+				render(e);
+			}
+			
+			const el = document.querySelector(".selection");
+			
+			document.body.onmousedown = event => { if (event.which === 1) mouseDown(el, event.x, event.y) };
+			document.body.onmouseup   = event => { if (event.which === 1) mouseUp(el) };
+			document.body.onmousemove = event => { if (event.which === 1) mouseMove(el, event.x, event.y) };
+		</script>
+	</body>
+</html>
